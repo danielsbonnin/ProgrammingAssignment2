@@ -1,15 +1,45 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Caches the results of solve() to avoid re-computing on the same matrix
 
-## Write a short comment describing this function
+## Store matrix and its inverse in parent environment
+## Expose get and set methods
 
 makeCacheMatrix <- function(x = matrix()) {
-
+  inv <- NULL
+  set <- function(y) {
+    x <<- y
+    inv <<- NULL
+  }
+  get <- function() x
+  setInv <- function(theInverse) inv <<- theInverse
+  getInv <- function() inv
+  list(set = set, get = get, setInv = setInv, getInv = getInv)
 }
 
 
-## Write a short comment describing this function
+## Generates a matrix inverse on a makeCacheMatrix
+## Or returns cached inverse, if one already exists.
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  ## Attempt to retrieve existing inverse matrix
+  inv <- x$getInv()
+  
+  ## Inverse is cached already
+  if(!is.null(inv)) {
+    message("getting cached data")
+    return(inv)
+  }
+  
+  ## Inverse has not been cached
+  
+  ## Retrieve matrix
+  data <- x$get()
+  
+  ## Generate inverse
+  inv <- solve(data, ...)
+  
+  ## Cache inverse matrix
+  x$setInv(inv)
+  
+  ## Return inverse
+  inv
 }
